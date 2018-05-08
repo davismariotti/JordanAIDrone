@@ -2,14 +2,20 @@
 Demo the trick flying for the python interface
 """
 
-from pyparrot import Mambo
+from Mambo import Mambo
 import cv2
+import os
+import datetime
+import numpy as np
+from keras.models import load_model
+from keras.preprocessing import image
 
 
 class MamboCamera:
     def __init__(self, feed):
         self.feed = feed
         self.capture = None
+        self.count = 0
 
     def connect(self):
         self.capture = cv2.VideoCapture(self.feed)
@@ -32,14 +38,26 @@ class MamboCamera:
         else:
             return False
 
+    def save_frame(self):
+        frame = self.get_frame()
+        file_name = "rec_frame_" + datetime.datetime.now().time().strftime('%H_%M_%S_%f') + ".jpg"
+        cv2.imwrite(os.path.join('images/right', file_name), frame)
+        self.count += 1
 
-# you will need to change this to the address of YOUR mambo
+
+def use(model_file, frame):
+    model = load_model(model_file)
+    x = cv2.resize(frame, dsize=(150, 150), interpolation=cv2.INTER_CUBIC)
+    x = np.expand_dims(x, axis=0)
+    return model.predict(x, verbose=1)[0]
+
+
 mamboAddr = "e0:14:d0:63:3d:d0"
 mamboRTSP = "rtsp://192.168.99.1/media/stream2"
 
 # make my mambo object
 # remember to set True/False for the wifi depending on if you are using the wifi or the BLE to connect
-mambo = Mambo.Mambo(mamboAddr, use_wifi=True)
+mambo = Mambo(mamboAddr, use_wifi=True)
 
 print("trying to connect")
 success = mambo.connect(num_retries=3)
@@ -51,20 +69,28 @@ if success:
     mambo.smart_sleep(1)
     mambo.ask_for_state_update()
     mambo.safe_takeoff(5)
-    mambo.smart_sleep(1)
 
     if mambo.sensors.flying_state != "emergency":
         print("flying state is %s" % mambo.sensors.flying_state)
 
-        camera = MamboCamera(mamboRTSP)
+        mambo.smart_sleep(1)
 
-        camera.connect()
-        count = 0
         try:
+            camera = MamboCamera(mamboRTSP)
+            print("Connecting to camera")
+            camera.connect()
+            print("Camera connected")
+            count = 0
             while camera.is_running():
-
+                if count == 0:
+                    print("Camera running")
+                mambo.smart_sleep(0.25)
                 print(count)
-                camera.get_frame()
+                # camera.save_frame()
+                fr = camera.get_frame()
+                x = use("first_model_full.h5", fr)
+                print(x)
+
                 count += 1
         except KeyboardInterrupt:
             print('Shutting down')
