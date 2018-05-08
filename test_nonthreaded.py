@@ -8,8 +8,8 @@ import os
 import datetime
 import numpy as np
 from keras.models import load_model
-from keras.preprocessing import image
-
+# from keras.preprocessing import image
+import time
 
 class MamboCamera:
     def __init__(self, feed):
@@ -45,11 +45,15 @@ class MamboCamera:
         self.count += 1
 
 
-def use(model_file, frame):
-    model = load_model(model_file)
-    x = cv2.resize(frame, dsize=(150, 150), interpolation=cv2.INTER_CUBIC)
-    x = np.expand_dims(x, axis=0)
-    return model.predict(x, verbose=1)[0]
+class MamboModel:
+    def __init__(self, model_file):
+        self.model_file = model_file
+        self.model = load_model(self.model_file)
+
+    def use(self, frame):
+        img = cv2.resize(frame, dsize=(150, 150), interpolation=cv2.INTER_CUBIC)
+        img = np.expand_dims(img, axis=0)
+        return self.model.predict(img, verbose=1)[0]
 
 
 mamboAddr = "e0:14:d0:63:3d:d0"
@@ -80,18 +84,21 @@ if success:
             print("Connecting to camera")
             camera.connect()
             print("Camera connected")
+            print("Loading Model")
+            model = MamboModel("first_model_full.h5")
+            print("Model loaded")
             count = 0
             while camera.is_running():
                 if count == 0:
                     print("Camera running")
                 mambo.smart_sleep(0.25)
                 print(count)
-                # camera.save_frame()
+                start = time.time()
                 fr = camera.get_frame()
-                x = use("first_model_full.h5", fr)
+                x = model.use(fr)
                 print(x)
-
                 count += 1
+                print(time.time() - start)
         except KeyboardInterrupt:
             print('Shutting down')
 
