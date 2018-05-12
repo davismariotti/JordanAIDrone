@@ -10,7 +10,8 @@ import numpy as np
 from keras.models import load_model
 import time
 import operator
-import threading
+from threading import Thread
+from queue import LifoQueue
 
 
 class MamboCamera:
@@ -18,10 +19,20 @@ class MamboCamera:
         self.feed = feed
         self.capture = None
         self.count = 0
+        self.queue = LifoQueue()
+        self.thread = Thread(target=self.start, args=())
+        self.thread.daemon = True
 
     def connect(self):
         self.capture = cv2.VideoCapture(self.feed)
         print('camera connected')
+
+    def start(self):
+        while True:
+            if self.capture.isOpened():
+                ret, frame = self.capture.read()
+                if ret:
+                    self.queue.put(frame)
 
     def disconnect(self):
         self.capture.release()
@@ -32,30 +43,16 @@ class MamboCamera:
         return self.capture.isOpened() and cv2.waitKey(33) != ord('q')
 
     def get_frame(self):
+        if self.queue.qsize() == 0:
+            return None
+        fr = self.queue.get()
+        return fr
+
+    def save_frame(self, location, frame):
         if self.capture.isOpened():
-            self.flush()
-            ret, frame = self.capture.read()
-            if not ret:
-                return False
-            return frame
-        else:
-            return False
-
-    def flush(self):
-        delay = 0
-        frames_with_delay = 0
-        while frames_with_delay <= 1:
-            start = time.time()
-            self.capture.grab()
-            delay = time.time() - start
-            if delay > 0:
-                frames_with_delay += 1
-
-    def save_frame(self):
-        frame = self.get_frame()
-        file_name = "rec_frame_" + datetime.datetime.now().time().strftime('%H_%M_%S_%f') + ".jpg"
-        cv2.imwrite(os.path.join('images/test', file_name), frame)
-        self.count += 1
+            file_name = "rec_frame_" + datetime.datetime.now().time().strftime('%H_%M_%S_%f') + ".jpg"
+            cv2.imwrite(os.path.join(location, file_name), frame)
+            self.count += 1
 
 
 class MamboModel:
@@ -98,6 +95,9 @@ class Drone:
                 print("Connecting to camera")
                 camera.connect()
                 print("Camera connected")
+                print("Starting camera thread")
+                camera.thread.start()
+                print("Camera thread started")
                 print("Loading Model")
                 model = MamboModel("first_model_full.h5")
                 print("Model loaded")
@@ -106,15 +106,18 @@ class Drone:
                     if count == 0:
                         print("Camera running")
                     # self.drone.smart_sleep(0.5)
-                    print(count)
+                    print("Count: ", count)
                     input()
                     start = time.time()
+
+                    print("Queue size: ", camera.queue.qsize())
                     fr = camera.get_frame()
-                    if fr is not None:
+                    print("Frame: ", type(fr))
+                    if fr is None:
                         continue
-                    camera.save_frame()
+                    camera.save_frame('images/test', frame=fr)
                     x = model.use(fr)
-                    print(x)
+                    print("Model output: ", x)
                     index = max(enumerate(x), key=operator.itemgetter(1))[0]
                     if x[0] == 0 and x[1] == 0 and x[2] == 0:
                         pass
@@ -127,9 +130,9 @@ class Drone:
                     elif index == 2:
                         self.drone.fly_direct(roll=0, pitch=10, yaw=0, vertical_movement=0, duration=0.25)
                         print("STRAIGHT")
-                    print(index)
+                    print("Index: ", index)
                     count += 1
-                    print(time.time() - start)
+                    print("Time: ", time.time() - start)
             except KeyboardInterrupt:
                 print('Shutting down')
 
@@ -170,7 +173,7 @@ class Drone:
                         print("Camera running")
                         self.drone.smart_sleep(0.25)
                     print(count)
-                    camera.save_frame()
+                    camera.save_frame('images/test')
                     count += 1
 
             except KeyboardInterrupt:
@@ -184,6 +187,7 @@ class Drone:
         print("disconnect")
         self.drone.disconnect()
 
+
 print("Which mode would you like to use?")
 print("1 - Training mode")
 print("2 - Real mode")
@@ -193,7 +197,7 @@ drone = Drone("rtsp://192.168.99.1/media/stream2")
 if drone.success:
     if mode == "1":
         drone.trainfly()
-    elif mode == 2:
+    elif mode == "2":
         drone.fly()
     else:
         drone.fly(takeoff=False)
