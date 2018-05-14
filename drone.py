@@ -18,7 +18,6 @@ class MamboCamera:
     def __init__(self, feed):
         self.feed = feed
         self.capture = None
-        self.count = 0
         self.queue = LifoQueue()
         self.thread = Thread(target=self.start, args=())
         self.thread.daemon = True
@@ -49,10 +48,8 @@ class MamboCamera:
         return fr
 
     def save_frame(self, location, frame):
-        if self.capture.isOpened():
-            file_name = "rec_frame_" + datetime.datetime.now().time().strftime('%H_%M_%S_%f') + ".jpg"
-            cv2.imwrite(os.path.join(location, file_name), frame)
-            self.count += 1
+        file_name = "rec_frame_" + datetime.datetime.now().time().strftime('%H_%M_%S_%f') + ".jpg"
+        cv2.imwrite(os.path.join(location, file_name), frame)
 
 
 class MamboModel:
@@ -105,12 +102,12 @@ class Drone:
                 while camera.is_running():
                     if count == 0:
                         print("Camera running")
-                    # self.drone.smart_sleep(0.5)
+                    self.drone.smart_sleep(0.25)
                     print("Count: ", count)
-                    input()
+                    # input()
                     start = time.time()
 
-                    print("Queue size: ", camera.queue.qsize())
+                    print("QUEUE SIZE: --------------------- ", camera.queue.qsize())
                     fr = camera.get_frame()
                     print("Frame: ", type(fr))
                     if fr is None:
@@ -121,14 +118,14 @@ class Drone:
                     index = max(enumerate(x), key=operator.itemgetter(1))[0]
                     if x[0] == 0 and x[1] == 0 and x[2] == 0:
                         pass
-                    elif index == 1:
-                        self.drone.fly_direct(roll=0, pitch=10, yaw=-20, vertical_movement=0, duration=0.25)
-                        print("LEFT")
                     elif index == 0:
-                        self.drone.fly_direct(roll=0, pitch=10, yaw=20, vertical_movement=0, duration=0.25)
+                        self.drone.fly_direct(roll=0, pitch=10, yaw=-20, vertical_movement=0, duration=0.5)
+                        print("LEFT")
+                    elif index == 1:
+                        self.drone.fly_direct(roll=0, pitch=10, yaw=20, vertical_movement=0, duration=0.5)
                         print("RIGHT")
                     elif index == 2:
-                        self.drone.fly_direct(roll=0, pitch=10, yaw=0, vertical_movement=0, duration=0.25)
+                        self.drone.fly_direct(roll=0, pitch=10, yaw=0, vertical_movement=0, duration=0.5)
                         print("STRAIGHT")
                     print("Index: ", index)
                     count += 1
@@ -164,16 +161,15 @@ class Drone:
                 print("Connecting to camera")
                 camera.connect()
                 print("Camera connected")
-                print("Loading Model")
-                model = MamboModel("first_model_full.h5")
-                print("Model loaded")
                 count = 0
                 while camera.is_running():
                     if count == 0:
                         print("Camera running")
                         self.drone.smart_sleep(0.25)
-                    print(count)
-                    camera.save_frame('images/test')
+                    print("Count:", count)
+                    ret, fr = camera.capture.read()
+                    if fr is not None:
+                        camera.save_frame('images/test', frame=fr)
                     count += 1
 
             except KeyboardInterrupt:
