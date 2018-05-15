@@ -8,7 +8,7 @@
 	Sophomore
 	\and
 	Davis Mariotti \\
-	Senior
+	Junior
 	\and 
 	Whitworth University \\
 	Department of Computer Science \\
@@ -79,14 +79,14 @@
 	\quad Element 1 of Figure 1 shows the position relative to the quadcopter (red circle) that the cube (green square) is held when we obtain the training data for the Straight category. 
 	This is because the course of action the quadcopter should take is determined by where the cube is in the quadcopter's field of vision. 
 	Thus, the category for element 2 will be Right, element 3 is Left, and the No Action category is just a quadcopter view without the target at all. 
-	The images will be downsized to $32x32px$, and used to train the NN to classify images from the quadcopter's feed. \newline
+	The images will be downsized to $150x150px$, and used to train the NN to classify images from the quadcopter's feed. \newline
 
 	\quad In production, the process will work as follows:
 	
 	\begin{enumerate}
 		\item{Quadcopter takes image}
 		\item{Image is sent to paired computer}
-		\item{Image is downsized to $32x32px$}
+		\item{Image is downsized to $150x150px$}
 		\item{Image is passed through the trained NN}
 		\item{Resulting classification is translated to quadcopter instruction}
 		\item{Quadcopter instruction is sent to and executed by quadcopter}	
@@ -139,9 +139,10 @@
 	We ran into a countless number of problems with both ends of this project, and each of us had to work through elements on our own and as a team.
 	One of the biggest problems we ran into was the image handling system of the library we used. 
 	OpenCV2 for Python only allows you to take a buffer of images, and does not allow any skips. 
-	Davis overcame this by placing all the images into a last-in-last-out queue to grab the latest image.  
+	Davis overcame this by placing all the images into a last-in-first-out queue to grab the latest image.  
 	I also ran into problems trying to get the model to compile and train efficiently , and how to save the model such that it can be loaded and used quickly enough for the controller to classify and send instructions to the drone. 
 	Parrot, the manufactorer of our drone, also pushed a firmware update which essentially broke the entire library which we used for controlling our drone, which has understandably caused lots of problems. 
+	In order to overcome this, we got a spare drone which didn't have the update and we were careful not to connect to another controller.
 }
 
 \section{Conclusions}
@@ -152,6 +153,15 @@
 	The lack of resources drove us to innovate in many areas, often relying simply on our intuition and experience. 
 	For example, Davis had to rewrite some of the code to connect with the drone and get images from it, and I had to reshape and alter the training images in order to get the classifier to work. 
 	I also had to research how to compile our model for use in a method that our drone controller could use.
+}
+
+\section{Contributions} {
+	Davis and I both had very different jobs in this group in order to cover the full breadth of the project.
+	Davis wrote most of the code to interface with the drone and to handle interatcions with the library we used. 
+	I wrote most of the code to process the image data, train the model on the data, and interface the classifier with Davis's controller.
+	We both were involved in either part of the project, but Davis clearly did the majority of the drone interfacing and I did most all of the model code.
+	I feel that we had very balanced roles in this project, and that neither of us could've done this on our own.
+	I feel that both our skills were applied in the best way to this project, and I am happy with the result.
 }
 
 \end{document}

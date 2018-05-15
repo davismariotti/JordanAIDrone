@@ -1,7 +1,7 @@
 # Fdb version 3
-["pdflatex"] 1524682023 "/home/asher/Documents/projects/ai-final/writeup/main.tex" "main.pdf" "main" 1524682024
+["pdflatex"] 1526410357 "/home/asher/Documents/projects/ai-final/writeup/main.tex" "main.pdf" "main" 1526410357
   "/etc/texmf/web2c/texmf.cnf" 1523941240 1101 af7716885e081ab43982cab7b4672c1a ""
-  "/home/asher/Documents/projects/ai-final/writeup/main.tex" 1524682022 5241 e5a199c85d4e8f346b92d6cd8bcdf102 ""
+  "/home/asher/Documents/projects/ai-final/writeup/main.tex" 1526410357 7950 4e6c1bb13c44adc09f8c74d9ee142cff ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1136768653 1328 c834bbb027764024c09d3d2bf908b5f0 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1136768653 1324 c910af8c371558dc20f2d7822f66fe64 ""
@@ -53,11 +53,11 @@
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1523941432 1863403 f3ff9a4253bcb5fb9a9baaf0c572cb01 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1523941453 3860111 e07ffcd3ee91a3d503c0472b4592d84e ""
   "images/quad-image.png" 1524200648 14040 41a102a21b0a2c5fa2615fa7c8b6f79b ""
-  "main.aux" 1524682023 323 8790a8c91c0d685eb1c8018cb2b92bb9 ""
-  "main.nls" 1524600025 459 c1bf04e16c56d94bd9125da5af2be604 ""
-  "main.tex" 1524682022 5241 e5a199c85d4e8f346b92d6cd8bcdf102 ""
+  "main.aux" 1526410357 550 2b44139b8f29e255bab72316916d752b ""
+  "main.nls" 1526362337 730 b6879ad90953a5869b6884d208fb456c ""
+  "main.tex" 1526410357 7950 4e6c1bb13c44adc09f8c74d9ee142cff ""
   (generated)
-  "main.pdf"
-  "main.log"
   "main.nlo"
+  "main.log"
+  "main.pdf"
   "main.aux"

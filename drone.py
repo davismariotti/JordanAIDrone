@@ -21,6 +21,7 @@ class MamboCamera:
         self.queue = LifoQueue()
         self.thread = Thread(target=self.start, args=())
         self.thread.daemon = True
+        self.qsize = 0
 
     def connect(self):
         self.capture = cv2.VideoCapture(self.feed)
@@ -78,7 +79,7 @@ class Drone:
         self.drone.ask_for_state_update()
         if takeoff:
             self.drone.safe_takeoff(5)
-            self.drone.fly_direct(roll=0, pitch=0, yaw=0, vertical_movement=10, duration=1)
+            self.drone.fly_direct(roll=0, pitch=0, yaw=0, vertical_movement=10, duration=1.5)
 
         if self.drone.sensors.flying_state != "emergency":
             print("flying state is %s" % self.drone.sensors.flying_state)
@@ -102,7 +103,7 @@ class Drone:
                 while camera.is_running():
                     if count == 0:
                         print("Camera running")
-                    self.drone.smart_sleep(0.25)
+                    self.drone.smart_sleep(0.5)
                     print("Count: ", count)
                     # input()
                     start = time.time()
@@ -125,7 +126,8 @@ class Drone:
                         self.drone.fly_direct(roll=0, pitch=10, yaw=20, vertical_movement=0, duration=0.5)
                         print("RIGHT")
                     elif index == 2:
-                        self.drone.fly_direct(roll=0, pitch=10, yaw=0, vertical_movement=0, duration=0.5)
+                        self.drone.smart_sleep(0.5)
+                        # self.drone.fly_direct(roll=0, pitch=10, yaw=0, vertical_movement=0, duration=0.5)
                         print("STRAIGHT")
                     print("Index: ", index)
                     count += 1
