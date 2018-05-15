@@ -31,7 +31,7 @@ model.add(Activation('sigmoid'))
 model.load_weights('first_model.h5')
 
 model.compile(loss='categorical_crossentropy',
-              optimizer='rmsprop',
+              optimizer='adam',
               metrics=['accuracy'])
 
 model.save('first_model_full.h5')
