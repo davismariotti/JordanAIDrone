@@ -1,0 +1,12 @@
+\begin{thenomenclature} 
+
+ \nomgroup{A}
+
+  \item [{Keras}]\begingroup  Library built to run with a backend of Tensorflow or another low-level matrix-multliplecation library. Has higher level abstractions, such that the arcitecture of the neural network can be more consisely built.\nomeqref {0}
+		\nompageref{1}
+  \item [{NN}]\begingroup  Neural Network: mathematic concept through which perceptrons are layered together and adjusted with sample data. \nomeqref {0}
+		\nompageref{1}
+  \item [{TF}]\begingroup  TensorFlow: a library built by Google for in-house neural network computations and large matrix calculations. Written in C, but most often used via a Python wrapper. \nomeqref {0}
+		\nompageref{1}
+
+\end{thenomenclature}
