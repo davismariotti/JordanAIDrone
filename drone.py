@@ -103,9 +103,8 @@ class Drone:
                 while camera.is_running():
                     if count == 0:
                         print("Camera running")
-                    self.drone.smart_sleep(0.5)
+                    self.drone.smart_sleep(0.75)
                     print("Count: ", count)
-                    # input()
                     start = time.time()
 
                     print("QUEUE SIZE: --------------------- ", camera.queue.qsize())
@@ -126,8 +125,7 @@ class Drone:
                         self.drone.fly_direct(roll=0, pitch=10, yaw=20, vertical_movement=0, duration=0.5)
                         print("RIGHT")
                     elif index == 2:
-                        self.drone.smart_sleep(0.5)
-                        # self.drone.fly_direct(roll=0, pitch=10, yaw=0, vertical_movement=0, duration=0.5)
+                        self.drone.fly_direct(roll=0, pitch=10, yaw=0, vertical_movement=0, duration=0.5)
                         print("STRAIGHT")
                     print("Index: ", index)
                     count += 1
